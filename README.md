@@ -42,7 +42,7 @@ cd YOUR_REPOSITORY_NAME
 Using GCC:
 
 ```bash
-g++ main.cpp -o ambulance
+ main.cpp -o ambulance
 ```
 
 ### 4. Run the Program
