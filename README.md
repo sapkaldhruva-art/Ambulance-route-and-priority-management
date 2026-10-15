@@ -53,7 +53,8 @@ Using GCC:
 ambulance.exe
 ```
 
-**Linux / macOS:**
+**Linux / 
+:**
 
 ```bash
 ./ambulance
