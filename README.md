@@ -96,4 +96,3 @@ When the dispatch operation is selected, Ambulance 102 is removed first because 
 * Implementing priority-based insertion
 * Learning node creation and pointer operations
 * Understanding insertion and deletion in linked lists
-* Applying DSA concepts to a real-world-inspired problem
