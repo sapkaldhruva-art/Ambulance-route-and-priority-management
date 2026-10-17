@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <limits>
 using namespace std;
 
 struct Node {
@@ -12,8 +11,8 @@ struct Node {
     Node(string n, string p) {
         name = n;
         phone = p;
-        left = nullptr;
-        right = nullptr;
+        left = NULL;
+        right = NULL;
     }
 };
 
@@ -21,9 +20,9 @@ class PhoneBook {
 private:
     Node* root;
 
-    // Insert a contact or update an existing contact
+    // Insert or update a contact
     Node* insertNode(Node* node, string name, string phone) {
-        if (node == nullptr) {
+        if (node == NULL) {
             return new Node(name, phone);
         }
 
@@ -42,7 +41,7 @@ private:
 
     // Search for a contact
     Node* searchNode(Node* node, string name) {
-        if (node == nullptr || node->name == name) {
+        if (node == NULL || node->name == name) {
             return node;
         }
 
@@ -53,47 +52,49 @@ private:
         return searchNode(node->right, name);
     }
 
-    // Display contacts in alphabetical order
+    // Display contacts alphabetically
     void displayInOrder(Node* node) {
-        if (node == nullptr) {
+        if (node == NULL) {
             return;
         }
 
         displayInOrder(node->left);
+
         cout << "Name: " << node->name
              << " | Phone: " << node->phone << endl;
+
         displayInOrder(node->right);
     }
 
-    // Find the first name alphabetically
+    // Find first name alphabetically
     Node* findFirst(Node* node) {
-        if (node == nullptr) {
-            return nullptr;
+        if (node == NULL) {
+            return NULL;
         }
 
-        while (node->left != nullptr) {
+        while (node->left != NULL) {
             node = node->left;
         }
 
         return node;
     }
 
-    // Find the last name alphabetically
+    // Find last name alphabetically
     Node* findLast(Node* node) {
-        if (node == nullptr) {
-            return nullptr;
+        if (node == NULL) {
+            return NULL;
         }
 
-        while (node->right != nullptr) {
+        while (node->right != NULL) {
             node = node->right;
         }
 
         return node;
     }
 
-    // Free allocated memory
+    // Free memory
     void deleteTree(Node* node) {
-        if (node == nullptr) {
+        if (node == NULL) {
             return;
         }
 
@@ -104,13 +105,14 @@ private:
 
 public:
     PhoneBook() {
-        root = nullptr;
+        root = NULL;
     }
 
     ~PhoneBook() {
         deleteTree(root);
     }
 
+    // Add a contact
     void addContact() {
         string name, phone;
 
@@ -129,7 +131,7 @@ public:
 
         root = insertNode(root, name, phone);
 
-        if (existing != nullptr) {
+        if (existing != NULL) {
             cout << "Contact updated successfully!\n";
         }
         else {
@@ -137,6 +139,7 @@ public:
         }
     }
 
+    // Search a contact
     void searchContact() {
         string name;
 
@@ -145,8 +148,8 @@ public:
 
         Node* result = searchNode(root, name);
 
-        if (result != nullptr) {
-            cout << "Contact found!\n";
+        if (result != NULL) {
+            cout << "\nContact found!\n";
             cout << "Name: " << result->name
                  << " | Phone: " << result->phone << endl;
         }
@@ -155,8 +158,9 @@ public:
         }
     }
 
+    // Display all contacts
     void displayContacts() {
-        if (root == nullptr) {
+        if (root == NULL) {
             cout << "Phone book is empty.\n";
             return;
         }
@@ -165,10 +169,11 @@ public:
         displayInOrder(root);
     }
 
+    // Display first contact
     void showFirstName() {
         Node* first = findFirst(root);
 
-        if (first == nullptr) {
+        if (first == NULL) {
             cout << "Phone book is empty.\n";
         }
         else {
@@ -178,10 +183,11 @@ public:
         }
     }
 
+    // Display last contact
     void showLastName() {
         Node* last = findLast(root);
 
-        if (last == nullptr) {
+        if (last == NULL) {
             cout << "Phone book is empty.\n";
         }
         else {
@@ -207,13 +213,13 @@ int main() {
         cout << "Enter your choice: ";
 
         if (!(cin >> choice)) {
-            cout << "Invalid input! Please enter a number.\n";
+            cout << "Invalid input! Enter a number.\n";
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(10000, '\n');
             continue;
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.ignore(10000, '\n');
 
         switch (choice) {
             case 1:
@@ -241,7 +247,7 @@ int main() {
                 break;
 
             default:
-                cout << "Invalid choice! Please try again.\n";
+                cout << "Invalid choice! Try again.\n";
         }
 
     } while (choice != 0);
