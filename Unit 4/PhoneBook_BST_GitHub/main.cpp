@@ -3,180 +3,213 @@
 #include <limits>
 using namespace std;
 
-class Clothing {
-public:
-    string item, color, fabric, category;
-    Clothing* next;
+struct Node {
+    string name;
+    string phone;
+    Node* left;
+    Node* right;
 
-    Clothing(string i, string c, string f, string cat) {
-        item = i;
-        color = c;
-        fabric = f;
-        category = cat;
-        next = NULL;
+    Node(string n, string p) {
+        name = n;
+        phone = p;
+        left = nullptr;
+        right = nullptr;
     }
 };
 
-class Wardrobe {
+class PhoneBook {
 private:
-    Clothing* head;
+    Node* root;
+
+    // Insert a contact or update an existing contact
+    Node* insertNode(Node* node, string name, string phone) {
+        if (node == nullptr) {
+            return new Node(name, phone);
+        }
+
+        if (name < node->name) {
+            node->left = insertNode(node->left, name, phone);
+        }
+        else if (name > node->name) {
+            node->right = insertNode(node->right, name, phone);
+        }
+        else {
+            node->phone = phone;
+        }
+
+        return node;
+    }
+
+    // Search for a contact
+    Node* searchNode(Node* node, string name) {
+        if (node == nullptr || node->name == name) {
+            return node;
+        }
+
+        if (name < node->name) {
+            return searchNode(node->left, name);
+        }
+
+        return searchNode(node->right, name);
+    }
+
+    // Display contacts in alphabetical order
+    void displayInOrder(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+
+        displayInOrder(node->left);
+        cout << "Name: " << node->name
+             << " | Phone: " << node->phone << endl;
+        displayInOrder(node->right);
+    }
+
+    // Find the first name alphabetically
+    Node* findFirst(Node* node) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        while (node->left != nullptr) {
+            node = node->left;
+        }
+
+        return node;
+    }
+
+    // Find the last name alphabetically
+    Node* findLast(Node* node) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        while (node->right != nullptr) {
+            node = node->right;
+        }
+
+        return node;
+    }
+
+    // Free allocated memory
+    void deleteTree(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
+    }
 
 public:
-    Wardrobe() {
-        head = NULL;
+    PhoneBook() {
+        root = nullptr;
     }
 
-    void addClothing() {
-        string item, color, fabric, category;
+    ~PhoneBook() {
+        deleteTree(root);
+    }
 
-        cout << "\nEnter clothing item: ";
-        getline(cin, item);
+    void addContact() {
+        string name, phone;
 
-        cout << "Enter color: ";
-        getline(cin, color);
+        cout << "Enter name: ";
+        getline(cin, name);
 
-        cout << "Enter fabric type: ";
-        getline(cin, fabric);
+        cout << "Enter phone number: ";
+        getline(cin, phone);
 
-        cout << "Enter category (Top/Bottom/Other): ";
-        getline(cin, category);
-
-        if (item.empty() || color.empty() ||
-            fabric.empty() || category.empty()) {
-            cout << "Please enter all details.\n";
+        if (name.empty() || phone.empty()) {
+            cout << "Name and phone number cannot be empty.\n";
             return;
         }
 
-        Clothing* newNode =
-            new Clothing(item, color, fabric, category);
+        Node* existing = searchNode(root, name);
 
-        if (head == NULL) {
-            head = newNode;
-        } else {
-            Clothing* temp = head;
+        root = insertNode(root, name, phone);
 
-            while (temp->next != NULL) {
-                temp = temp->next;
-            }
-
-            temp->next = newNode;
+        if (existing != nullptr) {
+            cout << "Contact updated successfully!\n";
         }
-
-        cout << "\nClothing item added successfully!\n";
+        else {
+            cout << "Contact added successfully!\n";
+        }
     }
 
-    void viewWardrobe() {
-        cout << "\n===== WARDROBE ITEMS =====\n";
+    void searchContact() {
+        string name;
 
-        if (head == NULL) {
-            cout << "Wardrobe is empty.\n";
+        cout << "Enter name to search: ";
+        getline(cin, name);
+
+        Node* result = searchNode(root, name);
+
+        if (result != nullptr) {
+            cout << "Contact found!\n";
+            cout << "Name: " << result->name
+                 << " | Phone: " << result->phone << endl;
+        }
+        else {
+            cout << "Contact not found!\n";
+        }
+    }
+
+    void displayContacts() {
+        if (root == nullptr) {
+            cout << "Phone book is empty.\n";
             return;
         }
 
-        Clothing* temp = head;
-        int i = 1;
+        cout << "\n--- Contacts in Alphabetical Order ---\n";
+        displayInOrder(root);
+    }
 
-        while (temp != NULL) {
-            cout << "\nItem " << i++ << endl;
-            cout << "Name: " << temp->item << endl;
-            cout << "Color: " << temp->color << endl;
-            cout << "Fabric: " << temp->fabric << endl;
-            cout << "Category: " << temp->category << endl;
+    void showFirstName() {
+        Node* first = findFirst(root);
 
-            temp = temp->next;
+        if (first == nullptr) {
+            cout << "Phone book is empty.\n";
+        }
+        else {
+            cout << "First name alphabetically: "
+                 << first->name << " | Phone: "
+                 << first->phone << endl;
         }
     }
 
-    void findMatchingClothes() {
-        cout << "\n===== MATCHING CLOTHES =====\n";
+    void showLastName() {
+        Node* last = findLast(root);
 
-        bool found = false;
-
-        Clothing* a = head;
-
-        while (a != NULL) {
-            Clothing* b = a->next;
-
-            while (b != NULL) {
-                if (a->category != b->category) {
-                    cout << a->item << " ("
-                         << a->color << ") + "
-                         << b->item << " ("
-                         << b->color << ")\n";
-
-                    found = true;
-                }
-
-                b = b->next;
-            }
-
-            a = a->next;
+        if (last == nullptr) {
+            cout << "Phone book is empty.\n";
         }
-
-        if (!found) {
-            cout << "No matching combinations found.\n";
-        }
-    }
-
-    void outfitSuggestions() {
-        cout << "\n===== OUTFIT SUGGESTIONS =====\n";
-
-        bool found = false;
-
-        Clothing* a = head;
-
-        while (a != NULL) {
-            Clothing* b = head;
-
-            while (b != NULL) {
-                if (a->category == "Top" &&
-                    b->category == "Bottom") {
-                    cout << a->item << " ("
-                         << a->color << ") + "
-                         << b->item << " ("
-                         << b->color << ")\n";
-
-                    found = true;
-                }
-
-                b = b->next;
-            }
-
-            a = a->next;
-        }
-
-        if (!found) {
-            cout << "Add at least one Top and one Bottom.\n";
-        }
-    }
-
-    ~Wardrobe() {
-        while (head != NULL) {
-            Clothing* temp = head;
-            head = head->next;
-            delete temp;
+        else {
+            cout << "Last name alphabetically: "
+                 << last->name << " | Phone: "
+                 << last->phone << endl;
         }
     }
 };
 
 int main() {
-    Wardrobe w;
-    int choice = 0;
+    PhoneBook pb;
+    int choice;
 
     do {
-        cout << "\n===== MODULAR WARDROBE & FABRIC PAIRING ENGINE =====\n";
-        cout << "1. Add Clothing Item\n";
-        cout << "2. View Wardrobe Items\n";
-        cout << "3. Find Matching Clothes\n";
-        cout << "4. Get Outfit Suggestions\n";
-        cout << "5. Exit\n";
+        cout << "\n========== PHONE BOOK USING BST ==========\n";
+        cout << "1. Add Contact\n";
+        cout << "2. Search Contact\n";
+        cout << "3. Display Contacts (Alphabetical)\n";
+        cout << "4. Find First Name\n";
+        cout << "5. Find Last Name\n";
+        cout << "0. Exit\n";
         cout << "Enter your choice: ";
 
         if (!(cin >> choice)) {
-            cout << "Invalid input. Please enter a number.\n";
+            cout << "Invalid input! Please enter a number.\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            choice = 0;
             continue;
         }
 
@@ -184,30 +217,34 @@ int main() {
 
         switch (choice) {
             case 1:
-                w.addClothing();
+                pb.addContact();
                 break;
 
             case 2:
-                w.viewWardrobe();
+                pb.searchContact();
                 break;
 
             case 3:
-                w.findMatchingClothes();
+                pb.displayContacts();
                 break;
 
             case 4:
-                w.outfitSuggestions();
+                pb.showFirstName();
                 break;
 
             case 5:
-                cout << "Thank you for using Wardrobe Engine!\n";
+                pb.showLastName();
+                break;
+
+            case 0:
+                cout << "Exiting Phone Book. Goodbye!\n";
                 break;
 
             default:
-                cout << "Invalid choice. Try again.\n";
+                cout << "Invalid choice! Please try again.\n";
         }
 
-    } while (choice != 5);
+    } while (choice != 0);
 
     return 0;
 }
